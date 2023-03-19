@@ -9,6 +9,7 @@
 }
 
 .calculator {
+    position: relative;
     padding: 20px;
     margin: auto;
     width: 270px;
@@ -21,6 +22,12 @@
     grid-template-columns: repeat(5, 50px);
     grid-template-rows: 100px repeat(5, 50px);
     box-shadow: 1px 1px 6px black, inset 0 0 8px 2px black;
+
+    &__valueA {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
 
     &__button {
         text-shadow: 1px 1px 2px black;
