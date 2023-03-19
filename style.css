@@ -1,6 +1,6 @@
 .center {
-  padding-left: calc(100% - 500px);
-  padding-right: calc(100% - 500px);
+  padding-left: calc(50% - 300px);
+  padding-right: calc(50% - 300px);
 }
 
 .main-heading {
@@ -10,6 +10,7 @@
 .calculator {
   font-size: 20px;
   display: grid;
+  justify-content: center;
   gap: 10px;
   grid-template-columns: repeat(5, 50px);
   grid-template-rows: repeat(6, 50px);
@@ -17,6 +18,7 @@
 .calculator__input {
   text-align: right;
   grid-column: 1/-1;
+  font-size: 16px;
 }
 .calculator__backspace {
   grid-column: 4/6;
