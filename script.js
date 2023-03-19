@@ -36,11 +36,6 @@ const calculator = {
     renderA: function() {
         this.containerA.textContent = `=${this.a}`
     },
-    '+':  function(){
-            this.isNextCalc = true;
-            this.nextOperation = (a,b) => +a + +b;
-            this.previosEval();              
-    },
     clear: function() {
         this.a = this.b = '';
         this.isNextCalc = false;
@@ -62,29 +57,45 @@ const calculator = {
     '%': function(){
         calculatorInput.value /= 100;
     },
+    '+':  function(){
+        if (!this.isNextCalc){
+            this.isNextCalc = true;
+            this.previosEval();
+            this.nextOperation = (a,b) => +a + +b;
+        } else {
+            this.nextOperation = (a,b) => +a + +b;
+            this.previosEval();
+        }             
+    },
     '/': function(){
-        this.isNextCalc = true;
-        this.nextOperation = (a,b) => b ? a / b : a;
-        this.previosEval();
+        if (!this.isNextCalc){
+            this.isNextCalc = true;
+            this.previosEval();
+            this.nextOperation = (a,b) => b ? a / b : a;
+        } else {
+            this.nextOperation = (a,b) => b ? a / b : a;
+            this.previosEval();
+        }   
     },
     '*': function(){
-        this.isNextCalc = true;
-        this.nextOperation = (a,b) => b ? a * b : a;
-        this.previosEval();    
+        if (!this.isNextCalc){
+            this.isNextCalc = true;
+            this.previosEval();
+            this.nextOperation = (a,b) => b ? a * b : a;
+        } else {
+            this.nextOperation = (a,b) => b ? a * b : a;
+            this.previosEval();
+        }    
     },
     '-': function(){
-        this.isNextCalc = true;
-        this.nextOperation = (a,b) => a - b;
-        this.previosEval();
-        if (!this.a){ //Если а пустая
-            this.a = calculatorInput.value;
+        if (!this.isNextCalc){
             this.isNextCalc = true;
-            this.nextOperation = (a,b) => a - b;
-        }
-        else {
             this.previosEval();
             this.nextOperation = (a,b) => a - b;
-        }       
+        } else {
+            this.nextOperation = (a,b) => a - b;
+            this.previosEval();
+        }        
     },
     '√': (a) => a ** 0.5,
     previosEval: function() {
@@ -95,7 +106,6 @@ const calculator = {
     '=': function() {
         this.previosEval()
         calculatorInput.value = this.a;
-        // this.clear();
         this.isNextCalc = true;
     } 
 }
