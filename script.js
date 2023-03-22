@@ -2,6 +2,7 @@
 // Поддерживает несколько операций подряд
 // Но пока не умеет выполнять операции по 
 // математическом приоритету
+// Почему-то не рендерятся операции % и √
 
 const form = document.querySelector('.calculator');
 const calculatorInput = document.querySelector('.calculator__input');
@@ -119,7 +120,11 @@ const calculator = {
         }
     },
 
-    '√': (a) => a ** 0.5,
+    '√': function () {
+        this.a = calculatorInput.value = this.a ** 0.5;
+        renderA();
+    },
+
     previosEval: function () {
         this.a = this.nextOperation(this.a, this.b);
         this.b = '';
