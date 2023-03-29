@@ -1,30 +1,31 @@
 'use strict';
-// Поддерживает несколько операций подряд
-// Но пока не умеет выполнять операции по 
-// математическом приоритету
-// Почему-то не рендерятся операции % и √
+/* 1. Использовать result для гибкости и наглядности
+   
+   3. Разобраться с функцией равно, определить критерии ее работы
+   4. Сложение 0.1 + 0.2,
+   5. Точность калькулятора
+   6. Обработка результатов больших значений
+   7. Деление на ноль
+   8. Область видимости, уменьшение шрифта */
 
 const form = document.querySelector('.calculator');
 const calculatorInput = document.querySelector('.calculator__input');
+const containerFirstNumber = document.querySelector('.calculator__valueA');
 
 form.addEventListener('click', (e) => {
-    if (!calculator.isFirstNumber) {
-        // calculatorInput.value = '';
-        // calculator.isFirstNumber = true;
-    }
-
     const digitKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.',];
     const funcKeys = ['+', '/', '*', '-',];
-    const oneActionKeys = ['C', '%', '±', '🠐', '√', '=',]
-    let keyPressed = e.target.textContent;
+    const oneActionKeys = ['C', '%', '±', '🠐', '√', '=',];
+    
+    const keyPressed = e.target.textContent;
 
     // Если нажимаем цифры набираются либо переменная а, либо переменная б
     if (digitKeys.includes(keyPressed)) {
         if (calculator.isFirstNumber) {
-            calculator.a = calculatorInput.value += keyPressed;
-            calculator.renderA();
+            calculator.firstNumber = calculatorInput.value += keyPressed;
+            calculator.renderFirstNumber();
         } else {
-            calculator.b += keyPressed;
+            calculator.secondNumber += keyPressed;
             calculatorInput.value += keyPressed;
         }
         // Если нажимаем функции, то флаг первоеЧисло меняется на false
@@ -39,41 +40,41 @@ form.addEventListener('click', (e) => {
 })
 
 const calculator = {
-    containerA: document.querySelector('.calculator__valueA'),
-    a: 0,
-    b: 0,
+    firstNumber: 0,
+    secondNumber: 0,
+    result: 0,
     isFirstNumber: true,
     nextOperation: () => '',
 
-    renderA: function () {
-        this.containerA.textContent = `=${this.a}`
+    renderFirstNumber: function () {
+        containerFirstNumber.textContent = `=${this.firstNumber}`
     },
 
     'C': function () {
-        this.a = this.b = calculatorInput.value = '';
+        this.firstNumber = this.secondNumber = calculatorInput.value = '';
         this.isFirstNumber = true;
-        this.renderA();
+        this.renderFirstNumber();
         this.nextOperation = () => '';
     },
 
     '±': function () {
-        this.a = calculatorInput.value = -calculatorInput.value;
-        this.renderA();
+        this.firstNumber = calculatorInput.value = -calculatorInput.value;
+        this.renderFirstNumber();
     },
     // Backspace не везде отображается значок
     '🠐': function () {
         if (this.isFirstNumber) {
-            this.a = calculatorInput.value = calculatorInput.value.slice(0, -1);
-            this.renderA();
+            this.firstNumber = calculatorInput.value = calculatorInput.value.slice(0, -1);
+            this.renderFirstNumber();
         } else {
             calculatorInput.value = calculatorInput.value.slice(0, -1);
-            this.b = this.b.slice(0, -1);
+            this.secondNumber = this.secondNumber.slice(0, -1);
         }
     },
 
     '%': function () {
-        this.a = calculatorInput.value /= 100;
-        renderA();
+        this.firstNumber = calculatorInput.value /= 100;
+        this.renderFirstNumber();
     },
 
     '+': function () {
@@ -121,19 +122,19 @@ const calculator = {
     },
 
     '√': function () {
-        this.a = calculatorInput.value = this.a ** 0.5;
-        renderA();
+        this.firstNumber = calculatorInput.value = this.firstNumber ** 0.5;
+        this.renderFirstNumber();
     },
 
     previosEval: function () {
-        this.a = this.nextOperation(this.a, this.b);
-        this.b = '';
-        this.renderA();
+        this.firstNumber = this.nextOperation(this.firstNumber, this.secondNumber);
+        this.secondNumber = '';
+        this.renderFirstNumber();
     },
 
     '=': function () {
         this.previosEval()
-        calculatorInput.value = this.a;
+        calculatorInput.value = this.firstNumber;
         this.isFirstNumber = false;
     }
 }
