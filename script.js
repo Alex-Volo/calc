@@ -2,8 +2,8 @@
 /* 1. Использовать result для гибкости и наглядности
    
    3. Разобраться с функцией равно, определить критерии ее работы
-   4. Сложение 0.1 + 0.2,
-   5. Точность калькулятора
+
+   
    6. Обработка результатов больших значений
    7. Деление на ноль
    8. Область видимости, уменьшение шрифта */
@@ -16,7 +16,7 @@ form.addEventListener('click', (e) => {
     const digitKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.',];
     const funcKeys = ['+', '/', '*', '-',];
     const oneActionKeys = ['C', '%', '±', '🠐', '√', '=',];
-    
+
     const keyPressed = e.target.textContent;
 
     // Если нажимаем цифры набираются либо переменная а, либо переменная б
@@ -48,6 +48,10 @@ const calculator = {
 
     renderFirstNumber: function () {
         containerFirstNumber.textContent = `=${this.firstNumber}`
+    },
+
+    fixResult: function (result) {
+        return parseFloat(result.toFixed(8));
     },
 
     'C': function () {
@@ -127,7 +131,8 @@ const calculator = {
     },
 
     previosEval: function () {
-        this.firstNumber = this.nextOperation(this.firstNumber, this.secondNumber);
+        this.result = this.nextOperation(this.firstNumber, this.secondNumber);
+        this.firstNumber = this.fixResult(this.result);
         this.secondNumber = '';
         this.renderFirstNumber();
     },
