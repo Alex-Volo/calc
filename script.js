@@ -1,7 +1,15 @@
 'use strict';
 /* 1. Использовать result для гибкости и наглядности
    
-   3. Разобраться с функцией равно, определить критерии ее работы
+   3. Разобраться с функцией равно, определить критерии ее работы.
+   3.1 Если после нажатия равно я набираю цифры, то табло
+   должно обнулиться, первое число должно обнулиться и все
+   вычисления должны начаться заново.
+   3.2 Но если после равно я нажимаю функцию, то первое число
+   становится тем, которое было указано на табло, 
+   а дальнейшийнабор цифр идет во второе число.
+   3.3 Если на табло не число, а я нажимаю функцию, то 
+   срабатываетобнуление
 
    
    6. Обработка результатов больших значений
@@ -40,8 +48,8 @@ form.addEventListener('click', (e) => {
 })
 
 const calculator = {
-    firstNumber: 0,
-    secondNumber: 0,
+    firstNumber: '',
+    secondNumber: '',
     result: 0,
     isFirstNumber: true,
     nextOperation: () => '',
@@ -51,7 +59,11 @@ const calculator = {
     },
 
     fixResult: function (result) {
-        return parseFloat(result.toFixed(8));
+        if (isNaN(result)) {
+            return result;
+        } else {
+            return parseFloat(result.toFixed(8));
+        }
     },
 
     'C': function () {
@@ -94,7 +106,14 @@ const calculator = {
 
     '/': function () {
         if (this.isFirstNumber) {
-            this.nextOperation = (a, b) => b ? a / b : a;
+            this.nextOperation = (a, b) => {
+                if (b == 0) {
+                    return 'Нельзя делить на ноль'
+
+                } else {
+                    return a / b;
+                }
+            };
 
         } else {
             this.previosEval();
