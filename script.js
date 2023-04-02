@@ -1,19 +1,11 @@
 'use strict';
 /* 1. Использовать result для гибкости и наглядности
    
-   3. Разобраться с функцией равно, определить критерии ее работы.
-   3.1 Если после нажатия равно я набираю цифры, то табло
-   должно обнулиться, первое число должно обнулиться и все
-   вычисления должны начаться заново.
-   3.2 Но если после равно я нажимаю функцию, то первое число
-   становится тем, которое было указано на табло, 
-   а дальнейшийнабор цифр идет во второе число.
-   3.3 Если на табло не число, а я нажимаю функцию, то 
-   срабатываетобнуление
+
 
    
    6. Обработка результатов больших значений
-   7. Деление на ноль
+
    8. Область видимости, уменьшение шрифта */
 
 const form = document.querySelector('.calculator');
@@ -27,9 +19,18 @@ form.addEventListener('click', (e) => {
 
     const keyPressed = e.target.textContent;
 
-    // Если нажимаем цифры набираются либо переменная а, либо переменная б
+    // Цифровой блок
+
     if (digitKeys.includes(keyPressed)) {
-        if (calculator.isFirstNumber) {
+        if(calculator.isAfterEqual){
+            calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
+            calculator.isFirstNumber = true;
+            calculator.isAfterEqual = false;
+
+            calculator.firstNumber = calculatorInput.value += keyPressed;
+            calculator.renderFirstNumber();
+
+        } else if (calculator.isFirstNumber) {
             calculator.firstNumber = calculatorInput.value += keyPressed;
             calculator.renderFirstNumber();
         } else {
@@ -38,9 +39,21 @@ form.addEventListener('click', (e) => {
         }
         // Если нажимаем функции, то флаг первоеЧисло меняется на false
     } else if (funcKeys.includes(keyPressed)) {
+        if(isNaN(calculator.firstNumber)){
+            calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
+            calculator.renderFirstNumber();
+        } else if (calculator.isAfterEqual){
+            calculator.isFirstNumber = true;
+            calculatorInput.value += keyPressed;
+            calculator[keyPressed]();
+            calculator.isFirstNumber = false;
+            calculator.isAfterEqual = false;
+        }else {
         calculatorInput.value += keyPressed;
         calculator[keyPressed]();
         calculator.isFirstNumber = false;
+        calculator.isAfterEqual = false;
+        }
 
     } else if (oneActionKeys.includes(keyPressed)) {
         calculator[keyPressed]();
@@ -52,6 +65,7 @@ const calculator = {
     secondNumber: '',
     result: 0,
     isFirstNumber: true,
+    isAfterEqual: false,
     nextOperation: () => '',
 
     renderFirstNumber: function () {
@@ -100,7 +114,7 @@ const calculator = {
         } else {
             this.previosEval();
             this.nextOperation = (a, b) => +a + +b;
-            this.previosEval();
+
         }
     },
 
@@ -117,8 +131,15 @@ const calculator = {
 
         } else {
             this.previosEval();
-            this.nextOperation = (a, b) => b ? a / b : a;
-            this.previosEval();
+            this.nextOperation = (a, b) => {
+                if (b == 0) {
+                    return 'Нельзя делить на ноль'
+
+                } else {
+                    return a / b;
+                }
+            }
+
         }
     },
 
@@ -129,7 +150,7 @@ const calculator = {
         } else {
             this.previosEval();
             this.nextOperation = (a, b) => b ? a * b : a;
-            this.previosEval();
+
         }
     },
 
@@ -140,7 +161,7 @@ const calculator = {
         } else {
             this.previosEval();
             this.nextOperation = (a, b) => a - b;
-            this.previosEval();
+
         }
     },
 
@@ -159,6 +180,6 @@ const calculator = {
     '=': function () {
         this.previosEval()
         calculatorInput.value = this.firstNumber;
-        this.isFirstNumber = false;
+        this.isAfterEqual = true;
     }
 }
