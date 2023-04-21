@@ -1,10 +1,9 @@
 'use strict';
-/* 1. Использовать result для гибкости и наглядности
-   
-
-
-   
+/*    
    6. Обработка результатов больших значений
+   6.1. Максимальное количество цифр 16 +
+   6.2. Обработка результата. Если он превышает длинну в 16
+   символов, то представить число в экспоненциальной форме +
 
    8. Область видимости, уменьшение шрифта */
 
@@ -22,37 +21,52 @@ form.addEventListener('click', (e) => {
     // Цифровой блок
 
     if (digitKeys.includes(keyPressed)) {
-        if(calculator.isAfterEqual){
-            calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
-            calculator.isFirstNumber = true;
-            calculator.isAfterEqual = false;
+        switch (true) {
 
-            calculator.firstNumber = calculatorInput.value += keyPressed;
-            calculator.renderFirstNumber();
+            case (calculator.isAfterEqual): {
+                if (calculator.firstNumber.length < 17) {
+                    calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
+                    calculator.isFirstNumber = true;
+                    calculator.isAfterEqual = false;
 
-        } else if (calculator.isFirstNumber) {
-            calculator.firstNumber = calculatorInput.value += keyPressed;
-            calculator.renderFirstNumber();
-        } else {
-            calculator.secondNumber += keyPressed;
-            calculatorInput.value += keyPressed;
+                    calculator.firstNumber = calculatorInput.value += keyPressed;
+                    calculator.renderFirstNumber();
+                }
+                break;
+            }
+
+            case (calculator.isFirstNumber): {
+                if (calculator.firstNumber.length < 17) {
+                    calculator.firstNumber = calculatorInput.value += keyPressed;
+                    calculator.renderFirstNumber();
+                }
+                break;
+            }
+
+            default: {
+                if (calculator.secondNumber.length < 17) {
+                    calculator.secondNumber += keyPressed;
+                    calculatorInput.value += keyPressed;
+                }
+                break;
+            }
         }
         // Если нажимаем функции, то флаг первоеЧисло меняется на false
     } else if (funcKeys.includes(keyPressed)) {
-        if(isNaN(calculator.firstNumber)){
+        if (isNaN(calculator.firstNumber)) {
             calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
             calculator.renderFirstNumber();
-        } else if (calculator.isAfterEqual){
+        } else if (calculator.isAfterEqual) {
             calculator.isFirstNumber = true;
             calculatorInput.value += keyPressed;
             calculator[keyPressed]();
             calculator.isFirstNumber = false;
             calculator.isAfterEqual = false;
-        }else {
-        calculatorInput.value += keyPressed;
-        calculator[keyPressed]();
-        calculator.isFirstNumber = false;
-        calculator.isAfterEqual = false;
+        } else {
+            calculatorInput.value += keyPressed;
+            calculator[keyPressed]();
+            calculator.isFirstNumber = false;
+            calculator.isAfterEqual = false;
         }
 
     } else if (oneActionKeys.includes(keyPressed)) {
@@ -76,7 +90,12 @@ const calculator = {
         if (isNaN(result)) {
             return result;
         } else {
-            return parseFloat(result.toFixed(8));
+            const fixedResult = parseFloat(result.toFixed(8));
+            if (fixedResult.toString().length < 17) {
+                return fixedResult
+            } else {
+                return fixedResult.toExponential(10);
+            }
         }
     },
 
