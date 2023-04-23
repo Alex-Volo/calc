@@ -4,6 +4,9 @@
    6.1. Максимальное количество цифр 16 +
    6.2. Обработка результата. Если он превышает длинну в 16
    символов, то представить число в экспоненциальной форме +
+   6.3. Обрезать лишние нули +
+   6.4. Сделать возможность добавлять считать
+   6.4. overfolow уходит влево
 
    8. Область видимости, уменьшение шрифта */
 
@@ -24,7 +27,7 @@ form.addEventListener('click', (e) => {
         switch (true) {
 
             case (calculator.isAfterEqual): {
-                if (calculator.firstNumber.length < 17) {
+                if (calculator.firstNumber.length < 15) {
                     calculator.firstNumber = calculator.secondNumber = calculatorInput.value = '';
                     calculator.isFirstNumber = true;
                     calculator.isAfterEqual = false;
@@ -36,7 +39,7 @@ form.addEventListener('click', (e) => {
             }
 
             case (calculator.isFirstNumber): {
-                if (calculator.firstNumber.length < 17) {
+                if (calculator.firstNumber.length < 15) {
                     calculator.firstNumber = calculatorInput.value += keyPressed;
                     calculator.renderFirstNumber();
                 }
@@ -44,7 +47,7 @@ form.addEventListener('click', (e) => {
             }
 
             default: {
-                if (calculator.secondNumber.length < 17) {
+                if (calculator.secondNumber.length < 15) {
                     calculator.secondNumber += keyPressed;
                     calculatorInput.value += keyPressed;
                 }
@@ -91,10 +94,13 @@ const calculator = {
             return result;
         } else {
             const fixedResult = parseFloat(result.toFixed(8));
-            if (fixedResult.toString().length < 17) {
+            if (fixedResult.toString().length < 15) {
                 return fixedResult
             } else {
-                return fixedResult.toExponential(10);
+                let fixedResultExp = fixedResult.toExponential(10).toString().split('e');
+                fixedResultExp[0] = parseFloat(fixedResultExp[0]);
+                fixedResultExp = fixedResultExp.join('e');
+                return fixedResultExp;
             }
         }
     },
